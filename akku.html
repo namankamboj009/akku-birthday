@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Akku! 🎉</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Sacramento&display=swap" rel="stylesheet">
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        .wrapper {
+            max-width: 500px;
+            width: 100%;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 35px 25px;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            display: none;
+            animation: fadeIn 0.6s ease-in-out forwards;
+        }
+        .card.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            font-family: 'Sacramento', cursive;
+            font-size: 4.5rem;
+            color: #ff6b81;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #f1f2f6;
+        }
+        p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #dcdde1;
+            margin-bottom: 25px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #ff6b81, #ff4757);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 107, 129, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 129, 0.6);
+        }
+        /* Step 1: Balloons */
+        .balloon-container {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .balloon {
+            width: 75px;
+            height: 95px;
+            background: #ff4757;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: transform 0.2s, opacity 0.3s;
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .balloon:nth-child(2) { background: #2ed573; }
+        .balloon:nth-child(3) { background: #1e90ff; }
+        .balloon.popped {
+            transform: scale(0);
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* Step 2: Candle */
+        .cake-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .candle {
+            width: 14px;
+            height: 55px;
+            background: #fff;
+            border-radius: 6px;
+            position: relative;
+            margin-bottom: 5px;
+        }
+        .flame {
+            width: 22px;
+            height: 32px;
+            background: #ffa502;
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -30px;
+            left: -4px;
+            animation: flicker 0.6s infinite alternate;
+            cursor: pointer;
+            box-shadow: 0 0 15px #ffa502;
+        }
+        .flame.out {
+            display: none;
+        }
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+            100% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+        }
+        .cake-base {
+            width: 130px;
+            height: 45px;
+            background: #ff6b81;
+            border-radius: 10px 10px 0 0;
+        }
+        .hint {
+            font-size: 0.85rem;
+            color: #a4b0be;
+            margin-top: 5px;
+        }
+        /* Memory list styling */
+        .memory-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #ff6b81;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            text-align: left;
+            font-size: 0.9rem;
+            color: #ffda79;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- CARD 1: Welcome Screen -->
+        <div class="card active" id="card-1">
+            <h1>Hey Akku!</h1>
+            <h2>Someone special built this for you 🎁</h2>
+            <p>Are you ready for your special birthday surprise? Click below to start your mini-adventure!</p>
+            <button class="btn" onclick="nextCard(2)">Let's Go! 🚀</button>
+        </div>
+
+        <!-- CARD 2: Balloon Task -->
+        <div class="card" id="card-2">
+            <h2>Task 1: Pop the Balloons! 🎈</h2>
+            <p>Tap all 3 balloons below to clear the path:</p>
+            <div class="balloon-container">
+                <div class="balloon" onclick="popBalloon(this)">🎈</div>
+                <div class="balloon" onclick="popBalloon(this)">🎈</div>
+                <div class="balloon" onclick="popBalloon(this)">🎈</div>
+            </div>
+            <div class="hint" id="balloon-hint">0/3 popped</div>
+        </div>
+
+        <!-- CARD 3: Candle Task -->
+        <div class="card" id="card-3">
+            <h2>Task 2: Make a Wish! 🕯️</h2>
+            <p>Tap the flame to blow out the birthday candle:</p>
+            <div class="cake-container">
+                <div class="candle">
+                    <div class="flame" id="flame" onclick="blowCandle()"></div>
+                </div>
+                <div class="cake-base"></div>
+            </div>
+            <div class="hint">Tap the fire to blow it out</div>
+        </div>
+
+        <!-- CARD 4: Final Birthday Wish -->
+        <div class="card" id="card-4">
+            <h1>Happy Birthday!</h1>
+            <h2>To My Amazing Bestie Akku 🎉</h2>
+            <p>
+                You are truly one of a kind. Thank you for all the endless laughs, late-night talks, and for always being my biggest supporter. Wishing you a year ahead filled with love, success, and endless food! ❤️
+            </p>
+            <div class="memory-box">💡 Partner in crime & forever best friend</div>
+            <div class="memory-box">🍕 Never says no to food plans</div>
+            <br>
+            <button class="btn" onclick="celebrateAgain()">Celebrate Again! 🎊</button>
+        </div>
+    </div>
+
+    <script>
+        let balloonsPopped = 0;
+
+        function nextCard(cardNumber) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            document.getElementById('card-' + cardNumber).classList.add('active');
+            
+            if (cardNumber === 4) {
+                confetti({
+                    particleCount: 200,
+                    spread: 100,
+                    origin: { y: 0.5 }
+                });
+            }
+        }
+
+        function popBalloon(element) {
+            if (!element.classList.contains('popped')) {
+                element.classList.add('popped');
+                balloonsPopped++;
+                document.getElementById('balloon-hint').innerText = balloonsPopped + "/3 popped";
+
+                confetti({
+                    particleCount: 25,
+                    spread: 40,
+                    origin: { y: 0.7 }
+                });
+
+                if (balloonsPopped === 3) {
+                    setTimeout(() => {
+                        nextCard(3);
+                    }, 500);
+                }
+            }
+        }
+
+        function blowCandle() {
+            let flame = document.getElementById('flame');
+            flame.classList.add('out');
+
+            confetti({
+                particleCount: 250,
+                spread: 120,
+                origin: { y: 0.4 }
+            });
+
+            setTimeout(() => {
+                nextCard(4);
+            }, 600);
+        }
+
+        function celebrateAgain() {
+            confetti({
+                particleCount: 150,
+                spread: 90,
+                origin: { y: 0.6 }
+            });
+        }
+    </script>
+</body>
+</html>
